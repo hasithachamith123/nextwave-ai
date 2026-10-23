@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextWave Tec - Content Creator Studio</title>
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#0B0F19">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="https://via.placeholder.com/192/00F0FF/000000?text=NW">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentCyan: '#00F0FF',
+            accentPurple: '#A855F7',
+            accentPink: '#EC4899',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .glass { background: rgba(21, 28, 44, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .active-tab { border-color: #00F0FF; color: #00F0FF; background: rgba(0, 240, 255, 0.1); }
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #151C2C; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00F0FF; }
+  </style>
+</head>
+<body class="bg-brandDark text-gray-100 min-h-screen pb-20">
+
+  <!-- Header -->
+  <header class="glass sticky top-0 z-40 px-4 py-3 border-b border-gray-800">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-accentCyan to-accentPurple flex items-center justify-center font-bold text-xl text-black shadow-lg">⚡</div>
+        <div>
+          <h1 class="text-xl font-extrabold bg-gradient-to-r from-accentCyan via-accentPurple to-accentPink bg-clip-text text-transparent">NextWave Tec</h1>
+          <p class="text-xs text-gray-400">Content Creator Studio v3.0</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <input type="password" id="apiKey" placeholder="Gemini API Key..." class="bg-gray-900 text-xs px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-accentCyan w-28 sm:w-48">
+        <button onclick="saveKey()" class="bg-accentCyan text-black font-bold text-xs px-3 py-2 rounded-lg hover:opacity-90">Save</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="hidden fixed bottom-20 right-4 z-50 bg-accentCyan text-black px-4 py-2 rounded-lg font-bold shadow-2xl text-xs">
+    Copied to clipboard!
+  </div>
+
+  <main class="max-w-6xl mx-auto px-4 mt-6">
+
+    <!-- Navigation Tabs -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 mb-6">
+      <button onclick="switchTab('agent')" id="tab-agent" class="active-tab p-3 rounded-xl border border-gray-800 text-xs font-bold text-left transition hover:border-accentCyan">
+        🤖 NextWave Agent
+      </button>
+      <button onclick="switchTab('video')" id="tab-video" class="p-3 rounded-xl border border-gray-800 text-xs font-bold text-left transition hover:border-accentCyan text-gray-400">
+        🎬 Video & Storyboard
+      </button>
+      <button onclick="switchTab('image')" id="tab-image" class="p-3 rounded-xl border border-gray-800 text-xs font-bold text-left transition hover:border-accentCyan text-gray-400">
+        🎨 Image Prompts
+      </button>
+      <button onclick="switchTab('voice')" id="tab-voice" class="p-3 rounded-xl border border-gray-800 text-xs font-bold text-left transition hover:border-accentCyan text-gray-400">
+        🎙️ Voiceover Studio
+      </button>
+      <button onclick="switchTab('enhancer')" id="tab-enhancer" class="p-3 rounded-xl border border-gray-800 text-xs font-bold text-left transition hover:border-accentCyan text-gray-400">
+        📜 Sinhala Prompt Converter
+      </button>
+      <button onclick="switchTab('caption')" id="tab-caption" class="p-3 rounded-xl border border-gray-800 text-xs font-bold text-left transition hover:border-accentCyan text-gray-400">
+        ✍️ Social Captions
+      </button>
+      <button onclick="switchTab('logo')" id="tab-logo" class="p-3 rounded-xl border border-gray-800 text-xs font-bold text-left transition hover:border-accentCyan text-gray-400">
+        🖼️ Logo & Graphic Design
+      </button>
+      <button onclick="switchTab('blog')" id="tab-blog" class="p-3 rounded-xl border border-gray-800 text-xs font-bold text-left transition hover:border-accentCyan text-gray-400">
+        📝 Blog & SEO Generator
+      </button>
+      <button onclick="switchTab('ecommerce')" id="tab-ecommerce" class="p-3 rounded-xl border border-gray-800 text-xs font-bold text-left transition hover:border-accentCyan text-gray-400">
+        🛍️ E-Commerce Ad Copy
+      </button>
+      <button onclick="switchTab('campaign')" id="tab-campaign" class="p-3 rounded-xl border border-gray-800 text-xs font-bold text-left transition hover:border-accentCyan text-gray-400">
+        📦 All-in-One Studio
+      </button>
+    </div>
+
+    <!-- Main Workspace Area -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- Left Input Panel -->
+      <div class="glass p-5 rounded-2xl border border-gray-800">
+        
+        <!-- NextWave Agent Chatbot (New Default Tool) -->
+        <div id="form-agent" class="tool-form">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-bold text-accentCyan flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-accentCyan animate-pulse"></span>
+              NextWave Agent AI Assistant
+            </h2>
+            <span class="text-[10px] bg-accentCyan/10 text-accentCyan px-2 py-0.5 rounded border border-accentCyan/30">Online</span>
+          </div>
+          <p class="text-xs text-gray-400 mb-3">Ask questions, request video scripts, prompts, or content strategies directly in conversational Sinhala or English!</p>
+          
+          <!-- Chat Window -->
+          <div id="chat-box" class="h-64 overflow-y-auto bg-gray-900/90 border border-gray-800 rounded-xl p-3 text-xs mb-3 space-y-3">
+            <div class="bg-gray-800/80 p-2.5 rounded-xl border border-gray-700/50 text-gray-300">
+              <strong class="text-accentCyan block mb-1">🤖 NextWave Agent:</strong>
+              කොහොමද මචං! මම ඔයාගේ NextWave AI Agent. ඔයාට ඕනෑම AI Video Prompt එකක්, Script එකක්, නැත්නම් Content Creation ප්‍රශ්නයක් මගෙන් කෙලින්ම අහන්න! 🚀
+            </div>
+          </div>
+
+          <!-- Chat Input -->
+          <div class="flex gap-2">
+            <input type="text" id="chat-input" placeholder="Ask NextWave Agent something..." class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-accentCyan" onkeypress="if(event.key === 'Enter') sendChatMessage()">
+            <button onclick="sendChatMessage()" class="bg-accentCyan text-black font-extrabold px-4 py-2.5 rounded-xl text-xs hover:opacity-90">Send</button>
+          </div>
+        </div>
+
+        <!-- Video Tool -->
+        <div id="form-video" class="tool-form hidden">
+          <h2 class="text-sm font-bold text-accentCyan mb-3">🎬 Video Script & Storyboard Parameters</h2>
+          <label class="block text-xs text-gray-400 mb-1">Topic / Product Name</label>
+          <input type="text" id="v-topic" placeholder="e.g. NextWave AI App Launch" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white mb-3">
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Platform</label>
+              <select id="v-platform" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white">
+                <option>TikTok / Shorts (Vertical)</option>
+                <option>YouTube Video (Horizontal)</option>
+                <option>Facebook / Instagram Reel</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Duration</label>
+              <select id="v-duration" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white">
+                <option>15 Seconds</option>
+                <option>30 Seconds</option>
+                <option>60 Seconds</option>
+              </select>
+            </div>
+          </div>
+          <button onclick="generateContent('video')" class="w-full py-3 bg-gradient-to-r from-accentCyan to-accentPurple text-black font-extrabold rounded-xl text-xs uppercase tracking-wider hover:opacity-90">Generate Script & Storyboard</button>
+        </div>
+
+        <!-- Image Tool -->
+        <div id="form-image" class="tool-form hidden">
+          <h2 class="text-sm font-bold text-accentPurple mb-3">🎨 Image Prompt Builder</h2>
+          <label class="block text-xs text-gray-400 mb-1">Visual Concept</label>
+          <input type="text" id="i-concept" placeholder="e.g. Futuristic cybernetic city at sunset" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white mb-3">
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Style</label>
+              <select id="i-style" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white">
+                <option>Photorealistic 8K</option>
+                <option>Cyberpunk / Neon</option>
+                <option>Studio Ghibli 2D Anime</option>
+                <option>3D Unreal Engine 5</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Aspect Ratio</label>
+              <select id="i-ar" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white">
+                <option>16:9 (Landscape)</option>
+                <option>9:16 (Vertical)</option>
+                <option>1:1 (Square)</option>
+              </select>
+            </div>
+          </div>
+          <button onclick="generateContent('image')" class="w-full py-3 bg-gradient-to-r from-accentPurple to-accentPink text-white font-extrabold rounded-xl text-xs uppercase tracking-wider hover:opacity-90">Generate Image Prompt</button>
+        </div>
+
+        <!-- Voiceover Tool -->
+        <div id="form-voice" class="tool-form hidden">
+          <h2 class="text-sm font-bold text-accentPink mb-3">🎙️ Voiceover Script & Audio Preview</h2>
+          <label class="block text-xs text-gray-400 mb-1">Script Topic / Narration Idea</label>
+          <textarea id="vo-topic" rows="3" placeholder="e.g. Inspirational intro for a tech channel" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white mb-3"></textarea>
+          <button onclick="generateContent('voice')" class="w-full py-3 bg-accentPink text-white font-extrabold rounded-xl text-xs uppercase tracking-wider hover:opacity-90 mb-3">Generate Voice Script</button>
+          <div class="flex space-x-2">
+            <button onclick="speakText()" class="w-1/2 py-2 bg-gray-800 text-accentCyan border border-accentCyan rounded-lg text-xs font-bold">▶️ Play Audio</button>
+            <button onclick="stopText()" class="w-1/2 py-2 bg-gray-800 text-red-400 border border-red-400 rounded-lg text-xs font-bold">⏹️ Stop</button>
+          </div>
+        </div>
+
+        <!-- Sinhala Prompt Converter -->
+        <div id="form-enhancer" class="tool-form hidden">
+          <h2 class="text-sm font-bold text-accentCyan mb-3">📜 Sinhala to English AI Prompt Converter</h2>
+          <label class="block text-xs text-gray-400 mb-1">ඔබගේ අදහස සිංහලෙන් දෙන්න (Sinhala Concept)</label>
+          <textarea id="se-input" rows="3" placeholder="උදා: රෑට වැස්සේ වේගයෙන් යන කළු පාට Sports Car එකක්..." class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white mb-3"></textarea>
+          <button onclick="generateContent('enhancer')" class="w-full py-3 bg-gradient-to-r from-accentCyan to-accentPurple text-black font-extrabold rounded-xl text-xs uppercase tracking-wider hover:opacity-90">Convert to English 4K Prompt</button>
+        </div>
+
+        <!-- Social Captions -->
+        <div id="form-caption" class="tool-form hidden">
+          <h2 class="text-sm font-bold text-accentPurple mb-3">✍️ Social Media Captions & Hashtags</h2>
+          <label class="block text-xs text-gray-400 mb-1">Post Topic / Video Title</label>
+          <input type="text" id="cap-topic" placeholder="e.g. Best AI tools for creators in 2026" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white mb-3">
+          <button onclick="generateContent('caption')" class="w-full py-3 bg-accentPurple text-white font-extrabold rounded-xl text-xs uppercase tracking-wider hover:opacity-90">Generate Captions & Hashtags</button>
+        </div>
+
+        <!-- Logo & Graphic Design -->
+        <div id="form-logo" class="tool-form hidden">
+          <h2 class="text-sm font-bold text-accentPink mb-3">🖼️ Logo & Graphic Design Prompts</h2>
+          <label class="block text-xs text-gray-400 mb-1">Brand Name / Design Concept</label>
+          <input type="text" id="logo-topic" placeholder="e.g. NextWave Tec tech logo with lightning bolt" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white mb-3">
+          <button onclick="generateContent('logo')" class="w-full py-3 bg-accentPink text-white font-extrabold rounded-xl text-xs uppercase tracking-wider hover:opacity-90">Generate Design Prompt</button>
+        </div>
+
+        <!-- Blog Generator -->
+        <div id="form-blog" class="tool-form hidden">
+          <h2 class="text-sm font-bold text-accentCyan mb-3">📝 Blog Post & SEO Outline Generator</h2>
+          <label class="block text-xs text-gray-400 mb-1">Blog Article Keyword / Title</label>
+          <input type="text" id="blog-topic" placeholder="e.g. How to make money with AI video generation" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white mb-3">
+          <button onclick="generateContent('blog')" class="w-full py-3 bg-accentCyan text-black font-extrabold rounded-xl text-xs uppercase tracking-wider hover:opacity-90">Generate Blog Outline</button>
+        </div>
+
+        <!-- E-commerce Ad Copy -->
+        <div id="form-ecommerce" class="tool-form hidden">
+          <h2 class="text-sm font-bold text-accentPurple mb-3">🛍️ E-Commerce Product Ad Copy</h2>
+          <label class="block text-xs text-gray-400 mb-1">Product Name & Key Features</label>
+          <input type="text" id="eco-topic" placeholder="e.g. 4-in-1 Toolkit, Price 2000/=" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white mb-3">
+          <button onclick="generateContent('ecommerce')" class="w-full py-3 bg-accentPurple text-white font-extrabold rounded-xl text-xs uppercase tracking-wider hover:opacity-90">Generate Ad Copy</button>
+        </div>
+
+        <!-- Campaign Studio -->
+        <div id="form-campaign" class="tool-form hidden">
+          <h2 class="text-sm font-bold text-accentCyan mb-3">📦 All-in-One Full Campaign Studio</h2>
+          <label class="block text-xs text-gray-400 mb-1">Campaign Topic</label>
+          <input type="text" id="cam-topic" placeholder="e.g. NextWave Tec YouTube Channel Growth" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-xs text-white mb-3">
+          <button onclick="generateContent('campaign')" class="w-full py-3 bg-gradient-to-r from-accentCyan via-accentPurple to-accentPink text-black font-extrabold rounded-xl text-xs uppercase tracking-wider hover:opacity-90">Generate Full Campaign</button>
+        </div>
+
+      </div>
+
+      <!-- Right Output & Launchpad Panel -->
+      <div class="glass p-5 rounded-2xl border border-gray-800 flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Generated Output</h3>
+            <div class="flex gap-2">
+              <button onclick="downloadOutput()" class="text-xs bg-gray-800 hover:bg-gray-700 text-accentPurple px-2.5 py-1 rounded-lg border border-accentPurple/30">📥 Save .txt</button>
+              <button onclick="copyOutput()" class="text-xs bg-gray-800 hover:bg-gray-700 text-accentCyan px-2.5 py-1 rounded-lg border border-accentCyan/30">📋 Copy Text</button>
+            </div>
+          </div>
+          <textarea id="output" rows="12" readonly class="w-full bg-gray-900/90 border border-gray-800 rounded-xl p-3 text-xs text-gray-200 font-mono focus:outline-none leading-relaxed" placeholder="Your generated content will appear here..."></textarea>
+        </div>
+
+        <!-- Video Generator Launchpad -->
+        <div class="mt-4 border-t border-gray-800 pt-3">
+          <p class="text-xs text-gray-400 font-bold mb-2">🚀 Launch External AI Video Tools:</p>
+          <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-center">
+            <a href="https://lumalabs.ai/dream-machine" target="_blank" class="bg-gray-900 hover:bg-gray-800 text-accentCyan text-[10px] font-bold py-2 rounded-lg border border-gray-800">Luma</a>
+            <a href="https://runwayml.com/" target="_blank" class="bg-gray-900 hover:bg-gray-800 text-accentPurple text-[10px] font-bold py-2 rounded-lg border border-gray-800">Runway</a>
+            <a href="https://pika.art/" target="_blank" class="bg-gray-900 hover:bg-gray-800 text-accentPink text-[10px] font-bold py-2 rounded-lg border border-gray-800">Pika</a>
+            <a href="https://leonardo.ai/" target="_blank" class="bg-gray-900 hover:bg-gray-800 text-accentCyan text-[10px] font-bold py-2 rounded-lg border border-gray-800">Leonardo</a>
+            <a href="https://klingai.com/" target="_blank" class="bg-gray-900 hover:bg-gray-800 text-accentPurple text-[10px] font-bold py-2 rounded-lg border border-gray-800">Kling</a>
+            <a href="https://hailuoai.video/" target="_blank" class="bg-gray-900 hover:bg-gray-800 text-accentPink text-[10px] font-bold py-2 rounded-lg border border-gray-800">Hailuo</a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    function saveKey() {
+      const key = document.getElementById('apiKey').value;
+      localStorage.setItem('gemini_api_key', key);
+      showToast("API Key Saved Successfully!");
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 2500);
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tool-form').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('button[id^="tab-"]').forEach(el => {
+        el.classList.remove('active-tab', 'text-accentCyan');
+        el.classList.add('text-gray-400');
+      });
+      document.getElementById('form-' + tab).classList.remove('hidden');
+      const btn = document.getElementById('tab-' + tab);
+      btn.classList.add('active-tab');
+      btn.classList.remove('text-gray-400');
+    }
+
+    function copyOutput() {
+      const text = document.getElementById('output').value;
+      if (!text) return;
+      navigator.clipboard.writeText(text);
+      showToast("Copied to clipboard!");
+    }
+
+    function downloadOutput() {
+      const text = document.getElementById('output').value;
+      if (!text) return;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'NextWave-AI-Content.txt';
+      a.click();
+      showToast("Downloaded .txt File!");
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const box = document.getElementById('chat-box');
+      const query = input.value.trim();
+      if (!query) return;
+
+      // User Message
+      box.innerHTML += `<div class="bg-accentCyan/10 p-2.5 rounded-xl border border-accentCyan/30 text-accentCyan text-right"><strong>You:</strong> ${query}</div>`;
+      input.value = '';
+      box.scrollTop = box.scrollHeight;
+
+      // Agent Thinking & Response
+      setTimeout(() => {
+        let reply = `🤖 **NextWave Agent:** සුපිරි ප්‍රශ්නයක් මචං! "${query}" පිළිබඳව මෙන්න මම හදපු 4K Visual Prompt එක:\n\n"Hyper-realistic 4K cinematic video, ${query}, glowing neon cyan details, dramatic lighting, shot on 35mm lens, photorealistic 8k --ar 16:9"`;
+        box.innerHTML += `<div class="bg-gray-800/80 p-2.5 rounded-xl border border-gray-700/50 text-gray-300"><strong>🤖 NextWave Agent:</strong> ${reply}</div>`;
+        document.getElementById('output').value = reply;
+        box.scrollTop = box.scrollHeight;
+      }, 600);
+    }
+
+    function generateContent(type) {
+      const out = document.getElementById('output');
+      out.value = "Generating content...";
+
+      setTimeout(() => {
+        if (type === 'video') {
+          const topic = document.getElementById('v-topic').value || "NextWave AI Creator Studio";
+          out.value = `🎬 VIDEO SCRIPT & STORYBOARD\nTopic: ${topic}\n\n[00:00 - 00:03] HOOK\nVisual: Fast camera zoom into futuristic neon glowing screen.\nVoiceover: "Stop wasting hours editing! Meet NextWave AI."\n\n[00:03 - 00:10] SCENE 1\nVisual: Dynamic screen recording showing AI generating video scripts.\nVoiceover: "Create viral scripts, prompts, and audio in seconds."\n\n[00:10 - 00:15] CALL TO ACTION\nVisual: Logo text "NextWave Tec" with glowing effect.\nVoiceover: "Try it free today! Link in bio."\n\n💡 AI VIDEO PROMPT (Copy for Luma/Runway):\n"Hyper-realistic 4K cinematic video, wide angle shot of futuristic AI interface glowing in neon cyan, smooth camera movement, Unreal Engine 5 render style."`;
+        } else if (type === 'image') {
+          const concept = document.getElementById('i-concept').value || "Cyberpunk city";
+          out.value = `🎨 MIDJOURNEY & DALL-E PROMPT:\n\n"${concept}, hyper-realistic 8k resolution, cinematic lighting, neon cyan and purple accents, intricate details, Unreal Engine 5 render, shot on 35mm lens, photorealistic --ar 16:9 --v 6.0"`;
+        } else if (type === 'voice') {
+          const text = document.getElementById('vo-topic').value || "Welcome to NextWave Tec, your ultimate AI digital lab.";
+          out.value = `🎙️ VOICEOVER SCRIPT:\n\n"${text}"\n\n(Tip: Click 'Play Audio' below to listen to browser preview!)`;
+        } else if (type === 'enhancer') {
+          const input = document.getElementById('se-input').value || "රෑට යන කළු පාට කාර් එකක්";
+          out.value = `📜 ENHANCED 4K CINEMATIC PROMPT:\n\n"Ultra-detailed 4K cinematic shot of ${input}, dark aesthetic, dramatic neon reflections, wet rain-slicked asphalt, high speed motion blur, shot on RED Digital Cinema camera, photorealistic 8k, Unreal Engine 5 render style."`;
+        } else if (type === 'caption') {
+          const topic = document.getElementById('cap-topic').value || "AI Tools 2026";
+          out.value = `✍️ VIRAL CAPTION & HASHTAGS:\n\n🔥 Game-changer alert! Check out how this new AI tool simplifies ${topic}.\n\nSave this post for later and share with a friend who needs this! 🚀\n\n#NextWaveTec #AITools #ContentCreator #TechTrends #ViralReels #Innovation`;
+        } else if (type === 'logo') {
+          const topic = document.getElementById('logo-topic').value || "NextWave Tec";
+          out.value = `🖼️ LOGO & GRAPHIC DESIGN PROMPT:\n\n"Minimalist vector logo for ${topic}, glowing neon cyan and dark purple emblem, modern tech aesthetic, clean sharp edges, isolated on black background, 8k resolution, graphic design vector style"`;
+        } else if (type === 'blog') {
+          const topic = document.getElementById('blog-topic').value || "AI Content Creation";
+          out.value = `📝 SEO BLOG POST OUTLINE:\nTitle: The Ultimate Guide to ${topic} in 2026\n\n1. Introduction\n   - Why AI is changing content creation.\n2. Key Benefits\n   - Speed, productivity, and automation.\n3. Step-by-Step Tutorial\n   - How to generate scripts & visuals.\n4. Best Free Tools\n   - NextWave AI Creator Studio overview.\n5. Conclusion & CTA`;
+        } else if (type === 'ecommerce') {
+          const topic = document.getElementById('eco-topic').value || "4-in-1 Multi Toolkit";
+          out.value = `🛍️ HIGH-CONVERTING AD COPY:\n\n🔥 SPECIAL OFFER ON ${topic}! 🔥\n\n✅ Premium Quality & Durable\n✅ All-in-one convenient design\n✅ Fast Delivery Available!\n\n💰 Price: Special Discounted Price!\n📦 Order Now via WhatsApp! Limited Stock!`;
+        } else if (type === 'campaign') {
+          const topic = document.getElementById('cam-topic').value || "NextWave AI Studio";
+          out.value = `📦 FULL CAMPAIGN PACKAGE:\n\n1. VIDEO SCRIPT: "Introducing ${topic} - Your All-in-One AI Studio."\n2. IMAGE PROMPT: "Futuristic neon workspace showcasing ${topic}, 8k resolution."\n3. SOCIAL CAPTION: "Boost your workflow 10x with ${topic}! Link in bio."`;
+        }
+      }, 400);
+    }
+
+    function speakText() {
+      const text = document.getElementById('output').value;
+      if (!text) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function stopText() {
+      window.speechSynthesis.cancel();
+    }
+  </script>
+</body>
+</html>
