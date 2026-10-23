@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextWave AI Content Creator Studio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0B0F17',
+                            card: '#121826',
+                            border: '#1E293B',
+                            cyan: '#06B6D4',
+                            purple: '#A855F7',
+                            pink: '#EC4899'
+                        }
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 20px rgba(6, 182, 212, 0.25)',
+                        'neon-purple': '0 0 20px rgba(168, 85, 247, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0B0F17;
+            color: #F8FAFC;
+        }
+        .glass-panel {
+            background: rgba(18, 24, 38, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-panel-active {
+            background: rgba(18, 24, 38, 0.85);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #06B6D4 0%, #A855F7 50%, #EC4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-btn {
+            background: linear-gradient(135deg, #06B6D4 0%, #7C3AED 100%);
+            transition: all 0.3s ease;
+        }
+        .gradient-btn:hover {
+            opacity: 0.92;
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06B6D4;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-slate-800/80 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center text-white shadow-neon-cyan">
+                    <i class="fa-solid font-bold fa-bolt text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight gradient-text">NextWave Tec</span>
+                    <span class="text-xs block text-slate-400 font-medium tracking-wider uppercase">Content Creator Studio</span>
+                </div>
+            </div>
+
+            <!-- API Key & Controls -->
+            <div class="flex items-center space-x-3">
+                <div class="relative hidden sm:block w-64 md:w-80">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                        <i class="fa-solid fa-key text-xs"></i>
+                    </div>
+                    <input type="password" id="apiKeyInput" placeholder="Enter Gemini API Key (Optional)..." 
+                           class="w-full bg-slate-900/90 text-xs text-slate-200 rounded-lg pl-9 pr-8 py-2 border border-slate-800 focus:outline-none focus:border-cyan-500 transition-all">
+                    <button id="toggleKeyVisibility" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-300">
+                        <i class="fa-regular fa-eye text-xs"></i>
+                    </button>
+                </div>
+                
+                <button id="saveKeyBtn" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-lg text-cyan-400 border border-cyan-500/30 transition-all">
+                    <i class="fa-solid fa-floppy-disk mr-1"></i> Save Key
+                </button>
+
+                <div class="h-6 w-px bg-slate-800 hidden sm:block"></div>
+
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" 
+                   class="text-xs text-slate-400 hover:text-cyan-400 flex items-center gap-1 transition-colors">
+                    <span>Get Key</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile API Key Bar -->
+    <div class="sm:hidden px-4 py-2 bg-slate-900 border-b border-slate-800 flex items-center gap-2">
+        <input type="password" id="apiKeyInputMobile" placeholder="Gemini API Key (Optional)..." 
+               class="flex-grow bg-slate-950 text-xs text-slate-200 rounded-lg px-3 py-1.5 border border-slate-800 focus:outline-none focus:border-cyan-500">
+        <button id="saveKeyBtnMobile" class="px-3 py-1.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs rounded-lg font-semibold">Save</button>
+    </div>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 flex flex-col gap-6">
+
+        <!-- Navigation Tabs -->
+        <nav class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <button onclick="switchTab('tab-video')" id="btn-tab-video" class="tab-btn glass-panel glass-panel-active rounded-xl p-4 flex items-center space-x-3 text-left transition-all">
+                <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                    <i class="fa-solid fa-clapperboard text-lg"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-slate-200">Video & Storyboard</h2>
+                    <p class="text-xs text-slate-400">Hooks, Visuals & Scenes</p>
+                </div>
+            </button>
+
+            <button onclick="switchTab('tab-image')" id="btn-tab-image" class="tab-btn glass-panel rounded-xl p-4 flex items-center space-x-3 text-left transition-all">
+                <div class="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-slate-200">Image Prompts</h2>
+                    <p class="text-xs text-slate-400">Midjourney & DALL-E 3</p>
+                </div>
+            </button>
+
+            <button onclick="switchTab('tab-voice')" id="btn-tab-voice" class="tab-btn glass-panel rounded-xl p-4 flex items-center space-x-3 text-left transition-all">
+                <div class="w-10 h-10 rounded-lg bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-400">
+                    <i class="fa-solid fa-microphone-lines text-lg"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-slate-200">Voiceover Studio</h2>
+                    <p class="text-xs text-slate-400">Audio Script + TTS Preview</p>
+                </div>
+            </button>
+
+            <button onclick="switchTab('tab-allinone')" id="btn-tab-allinone" class="tab-btn glass-panel rounded-xl p-4 flex items-center space-x-3 text-left transition-all">
+                <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                    <i class="fa-solid fa-cubes text-lg"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-slate-200">All-in-One Studio</h2>
+                    <p class="text-xs text-slate-400">Full Campaign Creator</p>
+                </div>
+            </button>
+        </nav>
+
+        <!-- Status Indicator Bar -->
+        <div id="statusAlert" class="hidden p-3 rounded-xl border text-xs flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i id="statusIcon" class="fa-solid"></i>
+                <span id="statusText"></span>
+            </div>
+            <button onclick="document.getElementById('statusAlert').classList.add('hidden')" class="text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- TAB 1: VIDEO SCRIPT & STORYBOARD GENERATOR -->
+        <section id="tab-video" class="tab-content grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Inputs -->
+            <div class="lg:col-span-5 glass-panel rounded-2xl p-5 md:p-6 flex flex-col justify-between space-y-4">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-video text-cyan-400"></i> Video Generator Parameters
+                        </h2>
+                        <span class="text-[10px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded-full font-mono">Tool #1</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Topic / Product / Title</label>
+                            <input type="text" id="videoTopic" placeholder="e.g. NextWave AI Productivity App launch for creators" 
+                                   class="w-full bg-slate-900 text-sm text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-cyan-500">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Target Platform</label>
+                                <select id="videoPlatform" class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-cyan-500">
+                                    <option value="TikTok / YouTube Shorts (9:16)">TikTok / Shorts (Vertical)</option>
+                                    <option value="YouTube Longform (16:9)">YouTube Main (Horizontal)</option>
+                                    <option value="Instagram Reel / Ad">Instagram Reel / Ad</option>
+                                    <option value="LinkedIn Video">LinkedIn Video</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Video Duration</label>
+                                <select id="videoDuration" class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-cyan-500">
+                                    <option value="30 Seconds (Fast Pace)">30 Seconds (Fast)</option>
+                                    <option value="60 Seconds (Standard)">60 Seconds (Standard)</option>
+                                    <option value="2 Minutes (Detailed)">2 Minutes (Detailed)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Tone of Voice</label>
+                                <select id="videoTone" class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-cyan-500">
+                                    <option value="High-Energy & Viral">High-Energy & Viral</option>
+                                    <option value="Professional & Technical">Professional & Tech</option>
+                                    <option value="Inspirational & Storytelling">Inspirational & Story</option>
+                                    <option value="Humorous & Casual">Humorous & Casual</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Target Audience</label>
+                                <input type="text" id="videoAudience" placeholder="e.g. Content creators, Tech fans" 
+                                       class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-cyan-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Key Selling Points / Call To Action</label>
+                            <textarea id="videoKeyPoints" rows="2" placeholder="e.g. 10x faster workflow, try free at nextwavetec.com" 
+                                      class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-cyan-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="generateVideoScript()" class="w-full py-3 rounded-xl gradient-btn text-white font-bold text-sm shadow-neon-cyan flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Script & Storyboard
+                </button>
+            </div>
+
+            <!-- Output Display -->
+            <div class="lg:col-span-7 glass-panel rounded-2xl p-5 md:p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                        <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-rectangle-list text-cyan-400"></i> Storyboard Output
+                        </h3>
+                        <button onclick="copyOutput('videoResult')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5">
+                            <i class="fa-regular fa-copy"></i> Copy Script
+                        </button>
+                    </div>
+
+                    <div id="videoResult" class="min-h-[380px] max-h-[500px] overflow-y-auto text-xs text-slate-300 space-y-3 font-mono leading-relaxed bg-slate-950/60 rounded-xl p-4 border border-slate-800/80">
+                        <div class="text-slate-500 text-center py-20">
+                            <i class="fa-solid fa-film text-3xl mb-2 block text-slate-600"></i>
+                            Fill in your video details and click "Generate Script & Storyboard" to start.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-500 flex justify-between items-center mt-3 pt-2 border-t border-slate-800/50">
+                    <span>Generated by NextWave Tec Engine</span>
+                    <span id="videoWordCount">0 Words</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: AI IMAGE PROMPT BUILDER -->
+        <section id="tab-image" class="tab-content hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Inputs -->
+            <div class="lg:col-span-5 glass-panel rounded-2xl p-5 md:p-6 flex flex-col justify-between space-y-4">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-image text-purple-400"></i> Image Prompt Engine
+                        </h2>
+                        <span class="text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded-full font-mono">Tool #2</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Core Concept / Subject</label>
+                            <input type="text" id="imgSubject" placeholder="e.g. Futuristic cybernetic developer working on hologram UI" 
+                                   class="w-full bg-slate-900 text-sm text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-purple-500">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Art Style</label>
+                                <select id="imgStyle" class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-purple-500">
+                                    <option value="Hyper-realistic Photorealistic 8K">Photorealistic 8K</option>
+                                    <option value="Cyberpunk Synthwave Neon">Cyberpunk / Neon</option>
+                                    <option value="3D Pixar / Octane Render Concept">3D Octane Render</option>
+                                    <option value="Anime Sci-Fi Studio Ghibli">Anime / Studio Ghibli</option>
+                                    <option value="Minimalist Tech Vector Art">Minimalist Tech Vector</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Lighting</label>
+                                <select id="imgLighting" class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-purple-500">
+                                    <option value="Cinematic Volumetric Lighting, Golden Hour">Cinematic Volumetric</option>
+                                    <option value="Dramatic Neon Rim Lighting, Studio Dark">Neon Rim Glow</option>
+                                    <option value="Soft Ambient Studio Lighting">Soft Studio Ambient</option>
+                                    <option value="Moody Cyberpunk Bioluminescence">Bioluminescent Moody</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Camera & Lens</label>
+                                <select id="imgCamera" class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-purple-500">
+                                    <option value="85mm f/1.4 Lens, Shallow Depth of Field">85mm Portrait (Bokeh)</option>
+                                    <option value="Wide Angle 16mm Lens, Dramatic Perspective">16mm Wide Angle</option>
+                                    <option value="Macro Shot, Ultra Detail">Macro Close-Up</option>
+                                    <option value="Drone Aerial Shot, Cinematic Scale">Drone Aerial Shot</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Aspect Ratio</label>
+                                <select id="imgAspect" class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-purple-500">
+                                    <option value="16:9 (Landscape)">16:9 (Landscape)</option>
+                                    <option value="9:16 (Vertical Reel)">9:16 (Vertical)</option>
+                                    <option value="1:1 (Square)">1:1 (Square)</option>
+                                    <option value="4:5 (Instagram Post)">4:5 (Portrait)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Negative Elements (Avoid)</label>
+                            <input type="text" id="imgNegative" value="blurry, distorted, low resolution, extra limbs, bad lighting, text watermark" 
+                                   class="w-full bg-slate-900 text-xs text-slate-300 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-purple-500">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="generateImagePrompt()" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-sm shadow-neon-purple flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Build Optimized Prompts
+                </button>
+            </div>
+
+            <!-- Output Display -->
+            <div class="lg:col-span-7 glass-panel rounded-2xl p-5 md:p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                        <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-terminal text-purple-400"></i> Optimized AI Image Prompts
+                        </h3>
+                    </div>
+
+                    <div id="imgResult" class="min-h-[380px] max-h-[500px] overflow-y-auto space-y-4">
+                        <div class="text-slate-500 text-center py-20">
+                            <i class="fa-regular fa-image text-3xl mb-2 block text-slate-600"></i>
+                            Select your parameters to craft 4K Midjourney, DALL-E 3 & Leonardo AI prompts.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-500 flex justify-between items-center mt-3 pt-2 border-t border-slate-800/50">
+                    <span>Compatible with Midjourney v6, DALL-E 3, Leonardo.Ai</span>
+                    <span>4K Photorealistic Standard</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: AI VOICEOVER & AUDIO SCRIPT STUDIO -->
+        <section id="tab-voice" class="tab-content hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Inputs -->
+            <div class="lg:col-span-5 glass-panel rounded-2xl p-5 md:p-6 flex flex-col justify-between space-y-4">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-microphone-lines text-pink-400"></i> Voiceover Script Studio
+                        </h2>
+                        <span class="text-[10px] bg-pink-500/10 text-pink-400 border border-pink-500/20 px-2 py-0.5 rounded-full font-mono">Tool #3</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Message / Key Concept</label>
+                            <input type="text" id="voiceTopic" placeholder="e.g. Announcing NextWave AI Studio lifetime access deal" 
+                                   class="w-full bg-slate-900 text-sm text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-pink-500">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Emotional Delivery</label>
+                                <select id="voiceEmotion" class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-pink-500">
+                                    <option value="Enthusiastic & Hype">Enthusiastic & Hype</option>
+                                    <option value="Calm, Deep & Trustworthy">Calm & Trustworthy</option>
+                                    <option value="Urgent & High Energy">Urgent & Dramatic</option>
+                                    <option value="Friendly & Conversational">Friendly Conversational</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Pacing Speed</label>
+                                <select id="voicePace" class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-pink-500">
+                                    <option value="Fast-Paced Commercial">Fast (Ad Style)</option>
+                                    <option value="Moderate Standard">Moderate (Standard)</option>
+                                    <option value="Slow & Deliberate">Slow & Deliberate</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Custom Voice Script Input / Notes</label>
+                            <textarea id="voiceNotes" rows="3" placeholder="Add specific words or phrases you want included in the audio narration..." 
+                                      class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-pink-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="generateVoiceoverScript()" class="w-full py-3 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Voice Script & Audio Preview
+                </button>
+            </div>
+
+            <!-- Output & TTS Audio Controls -->
+            <div class="lg:col-span-7 glass-panel rounded-2xl p-5 md:p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                        <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-pink-400"></i> Script & Live Text-To-Speech Player
+                        </h3>
+                        <button onclick="copyOutput('voiceScriptText')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5">
+                            <i class="fa-regular fa-copy"></i> Copy Script
+                        </button>
+                    </div>
+
+                    <!-- TTS Controls Panel -->
+                    <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 mb-4 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center space-x-2">
+                            <button id="playTtsBtn" onclick="toggleTtsSpeech()" class="w-9 h-9 rounded-lg bg-pink-500/20 text-pink-400 border border-pink-500/40 hover:bg-pink-500/30 flex items-center justify-center transition-all">
+                                <i class="fa-solid fa-play text-sm"></i>
+                            </button>
+                            <button onclick="stopTtsSpeech()" class="w-9 h-9 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-all">
+                                <i class="fa-solid fa-stop text-sm"></i>
+                            </button>
+                            <span class="text-xs font-semibold text-slate-300 ml-2">Web Audio TTS</span>
+                        </div>
+
+                        <div class="flex items-center space-x-3">
+                            <div>
+                                <label class="text-[10px] text-slate-400 block">Voice Accent</label>
+                                <select id="ttsVoiceSelect" class="bg-slate-950 text-[11px] text-slate-200 rounded px-2 py-1 border border-slate-800 focus:outline-none">
+                                    <!-- Populated via JS -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block">Pitch</label>
+                                <input type="range" id="ttsPitch" min="0.5" max="1.5" step="0.1" value="1" class="w-16 accent-pink-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Script Display -->
+                    <div id="voiceScriptContainer" class="min-h-[300px] max-h-[400px] overflow-y-auto bg-slate-950/60 rounded-xl p-4 border border-slate-800/80">
+                        <p id="voiceScriptText" class="text-xs text-slate-300 font-mono leading-relaxed">
+                            <span class="text-slate-500 text-center block py-16">
+                                <i class="fa-solid fa-headset text-3xl mb-2 block text-slate-600"></i>
+                                Voice script with emotional markers [Pause], [Excited], [Whisper] will appear here.
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-500 flex justify-between items-center mt-3 pt-2 border-t border-slate-800/50">
+                    <span>Engine: Web Speech API Synthesis</span>
+                    <span id="voiceDurationEst">Est. Duration: 0s</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: ALL-IN-ONE STUDIO (ONE-CLICK) -->
+        <section id="tab-allinone" class="tab-content hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Inputs -->
+            <div class="lg:col-span-4 glass-panel rounded-2xl p-5 md:p-6 flex flex-col justify-between space-y-4">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-cubes text-emerald-400"></i> All-in-One Generator
+                        </h2>
+                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono">Tool #4</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Campaign Title / Core Idea</label>
+                            <input type="text" id="aioTopic" placeholder="e.g. NextWave AI Automated Video Creation Platform" 
+                                   class="w-full bg-slate-900 text-sm text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-emerald-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Campaign Goal</label>
+                            <select id="aioGoal" class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-emerald-500">
+                                <option value="Product Launch & Conversions">Product Launch & Lead Gen</option>
+                                <option value="Brand Awareness & Virality">Brand Awareness & Virality</option>
+                                <option value="Educational Tutorial">Educational / How-To</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Target Platform & Format</label>
+                            <select id="aioFormat" class="w-full bg-slate-900 text-xs text-slate-100 rounded-lg p-2.5 border border-slate-800 focus:outline-none focus:border-emerald-500">
+                                <option value="Short Vertical Video (Reels/Shorts/TikTok)">Short Vertical Video Campaign</option>
+                                <option value="Full YouTube Video + Thumbnail Prompt">Full YouTube Video + Visual Package</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="generateAllInOne()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-rocket"></i> Generate Complete Package
+                </button>
+            </div>
+
+            <!-- Output Display -->
+            <div class="lg:col-span-8 glass-panel rounded-2xl p-5 md:p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                        <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-box-open text-emerald-400"></i> Full Campaign Content Package
+                        </h3>
+                        <button onclick="copyOutput('aioResult')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5">
+                            <i class="fa-regular fa-copy"></i> Copy Entire Campaign
+                        </button>
+                    </div>
+
+                    <div id="aioResult" class="min-h-[380px] max-h-[520px] overflow-y-auto space-y-4 bg-slate-950/60 rounded-xl p-4 border border-slate-800/80">
+                        <div class="text-slate-500 text-center py-20">
+                            <i class="fa-solid fa-layer-group text-3xl mb-2 block text-slate-600"></i>
+                            Generate full video script, Midjourney thumbnail prompts, and voiceover text with 1 click.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-500 flex justify-between items-center mt-3 pt-2 border-t border-slate-800/50">
+                    <span>NextWave Tec Unified AI Suite</span>
+                    <span>3-in-1 Output Engine</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-800/80 py-4 px-6 text-center text-xs text-slate-500">
+        <p>&copy; 2026 <span class="text-cyan-400 font-semibold">NextWave Tec</span>. Empowering Creators with AI Workflows.</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // State Management
+        let userApiKey = localStorage.getItem('nextwave_gemini_key') || '';
+        let currentTab = 'tab-video';
+        let ttsUtterance = null;
+
+        // Initialize UI & Events
+        window.addEventListener('DOMContentLoaded', () => {
+            // Restore saved API Key
+            if (userApiKey) {
+                document.getElementById('apiKeyInput').value = userApiKey;
+                document.getElementById('apiKeyInputMobile').value = userApiKey;
+            }
+
+            // Init Web Speech API Synth Voices
+            initTtsVoices();
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = initTtsVoices;
+            }
+
+            // Setup Key Handlers
+            document.getElementById('saveKeyBtn').addEventListener('click', saveApiKey);
+            document.getElementById('saveKeyBtnMobile').addEventListener('click', saveApiKeyMobile);
+            document.getElementById('toggleKeyVisibility').addEventListener('click', toggleKeyVisibility);
+        });
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Toggle active styles on buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('glass-panel-active'));
+            if (tabId === 'tab-video') document.getElementById('btn-tab-video').classList.add('glass-panel-active');
+            if (tabId === 'tab-image') document.getElementById('btn-tab-image').classList.add('glass-panel-active');
+            if (tabId === 'tab-voice') document.getElementById('btn-tab-voice').classList.add('glass-panel-active');
+            if (tabId === 'tab-allinone') document.getElementById('btn-tab-allinone').classList.add('glass-panel-active');
+        }
+
+        // API Key Storage Logic
+        function saveApiKey() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            userApiKey = key;
+            localStorage.setItem('nextwave_gemini_key', key);
+            showAlert('API Key saved successfully! Live Gemini model activated.', 'success');
+        }
+
+        function saveApiKeyMobile() {
+            const key = document.getElementById('apiKeyInputMobile').value.trim();
+            userApiKey = key;
+            localStorage.setItem('nextwave_gemini_key', key);
+            showAlert('API Key saved!', 'success');
+        }
+
+        function toggleKeyVisibility() {
+            const input = document.getElementById('apiKeyInput');
+            const icon = document.querySelector('#toggleKeyVisibility i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-regular fa-eye-slash text-xs';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-regular fa-eye text-xs';
+            }
+        }
+
+        // Display Alerts
+        function showAlert(message, type = 'info') {
+            const alertBox = document.getElementById('statusAlert');
+            const icon = document.getElementById('statusIcon');
+            const text = document.getElementById('statusText');
+
+            alertBox.classList.remove('hidden', 'bg-cyan-950/60', 'border-cyan-500/30', 'text-cyan-300', 'bg-amber-950/60', 'border-amber-500/30', 'text-amber-300', 'bg-emerald-950/60', 'border-emerald-500/30', 'text-emerald-300');
+
+            if (type === 'success') {
+                alertBox.classList.add('bg-emerald-950/60', 'border-emerald-500/30', 'text-emerald-300');
+                icon.className = 'fa-solid fa-circle-check text-emerald-400';
+            } else if (type === 'warning') {
+                alertBox.classList.add('bg-amber-950/60', 'border-amber-500/30', 'text-amber-300');
+                icon.className = 'fa-solid fa-triangle-exclamation text-amber-400';
+            } else {
+                alertBox.classList.add('bg-cyan-950/60', 'border-cyan-500/30', 'text-cyan-300');
+                icon.className = 'fa-solid fa-circle-info text-cyan-400';
+            }
+
+            text.innerText = message;
+        }
+
+        // Copy Helper
+        function copyOutput(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            const text = el.innerText || el.textContent;
+
+            // Using standard copy fallback as per constraints
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showAlert('Copied to clipboard successfully!', 'success');
+            } catch (err) {
+                showAlert('Failed to copy text.', 'warning');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // API Call Handler (Gemini API with Fallback)
+        async function queryGeminiApi(promptText) {
+            if (!userApiKey) {
+                showAlert('No API Key detected. Using offline NextWave fallback templates.', 'warning');
+                return null;
+            }
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${userApiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: promptText }] }]
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (resultText) {
+                    return resultText;
+                } else {
+                    throw new Error('Invalid response structure');
+                }
+            } catch (error) {
+                console.error('Gemini API Error:', error);
+                showAlert(`API Request failed (${error.message}). Falling back to offline engine.`, 'warning');
+                return null;
+            }
+        }
+
+        // TOOL 1: VIDEO SCRIPT & STORYBOARD GENERATOR
+        async function generateVideoScript() {
+            const topic = document.getElementById('videoTopic').value || 'NextWave AI Creator App';
+            const platform = document.getElementById('videoPlatform').value;
+            const duration = document.getElementById('videoDuration').value;
+            const tone = document.getElementById('videoTone').value;
+            const audience = document.getElementById('videoAudience').value || 'General Digital Creators';
+            const keyPoints = document.getElementById('videoKeyPoints').value || 'Fast AI creation, high quality';
+
+            const outputDiv = document.getElementById('videoResult');
+            outputDiv.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner fa-spin text-2xl text-cyan-400 mb-2"></i><p class="text-xs text-slate-400">Generating Hook & Storyboard with NextWave AI...</p></div>`;
+
+            const prompt = `Act as an expert viral video producer and scriptwriter for NextWave Tec.
+Create a complete Video Script & Storyboard based on these details:
+- Topic: ${topic}
+- Platform: ${platform}
+- Duration: ${duration}
+- Tone: ${tone}
+- Target Audience: ${audience}
+- Key Selling Points: ${keyPoints}
+
+Provide structured output with:
+1. 3 High-converting Hook Options (0-3s)
+2. Scene-by-Scene Storyboard Breakdown table containing:
+   - Scene # & Duration
+   - Visual Cues & On-Screen Text
+   - Voiceover Script
+   - Audio/B-Roll Recommendations
+3. Call To Action (CTA) ending.`;
+
+            let result = await queryGeminiApi(prompt);
+
+            if (!result) {
+                // Offline Fallback Template
+                result = `### 🎬 VIRAL HOOK OPTIONS (Select One):
+1. 💥 "Stop wasting 5 hours on video editing! NextWave AI just changed everything..."
+2. ⚡ "If you create content in 2026, you NEED to see this AI tool right now."
+3. 🚀 "Here is how top creators publish 10x faster using NextWave Tec."
+
+---
+
+### 🎥 SCENE-BY-SCENE STORYBOARD BREAKDOWN (${duration})
+
+**SCENE 1 (0:00 - 0:05) - THE HOOK**
+• Visual Cue: Fast zoom-in on a creator looking stressed at a blank screen, transitioning to glowing neon UI.
+• On-Screen Text: "Create Videos 10x Faster ⚡"
+• Voiceover Script: "Stop spending hours trying to write scripts and build prompts manually."
+• Audio: Punchy bass drop sound effect.
+
+**SCENE 2 (0:05 - 0:15) - THE PROBLEM & INTRO**
+• Visual Cue: Screen split showing tedious manual work vs NextWave AI Studio instant output.
+• Voiceover Script: "Meet NextWave AI Studio—the all-in-one suite built for modern video creators."
+• Audio: Upbeat energetic synthwave beat background.
+
+**SCENE 3 (0:15 - 0:25) - KEY FEATURES**
+• Visual Cue: Rapid montage showing 4K Midjourney prompt generator, audio script, and storyboard builder.
+• On-Screen Text: "Script + Prompts + Voiceover in 1 Click"
+• Voiceover Script: "${keyPoints}. Generate Hooks, visual breakdowns, and speech in seconds."
+
+**SCENE 4 (0:25 - 0:30) - CALL TO ACTION**
+• Visual Cue: NextWave Tec logo glowing with URL on screen.
+• On-Screen Text: "Try NextWave AI Studio Free Now!"
+• Voiceover Script: "Upgrade your creator workflow today. Visit nextwavetec.com now!"`;
+            }
+
+            outputDiv.innerHTML = `<pre class="whitespace-pre-wrap font-mono text-xs text-slate-200">${result}</pre>`;
+            const wordCount = result.split(/\s+/).length;
+            document.getElementById('videoWordCount').innerText = `${wordCount} Words`;
+        }
+
+        // TOOL 2: AI IMAGE PROMPT BUILDER
+        async function generateImagePrompt() {
+            const subject = document.getElementById('imgSubject').value || 'Futuristic cybernetic developer in dark high-tech studio';
+            const style = document.getElementById('imgStyle').value;
+            const lighting = document.getElementById('imgLighting').value;
+            const camera = document.getElementById('imgCamera').value;
+            const aspect = document.getElementById('imgAspect').value;
+            const negative = document.getElementById('imgNegative').value;
+
+            const outputDiv = document.getElementById('imgResult');
+            outputDiv.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner fa-spin text-2xl text-purple-400 mb-2"></i><p class="text-xs text-slate-400">Building 4K Prompts for Midjourney, DALL-E & Leonardo...</p></div>`;
+
+            const prompt = `Act as an expert AI prompt engineer. Build photorealistic 4K prompts based on:
+- Subject: ${subject}
+- Style: ${style}
+- Lighting: ${lighting}
+- Camera: ${camera}
+- Aspect Ratio: ${aspect}
+- Negative Prompt: ${negative}
+
+Format output into 3 distinct sections:
+1. Midjourney v6 Prompt
+2. DALL-E 3 Prompt
+3. Leonardo AI Prompt`;
+
+            let result = await queryGeminiApi(prompt);
+
+            if (!result) {
+                // Fallback structured display
+                const arTag = aspect.includes('16:9') ? '--ar 16:9' : aspect.includes('9:16') ? '--ar 9:16' : '--ar 1:1';
+                result = `### 🎨 MIDJOURNEY V6 PROMPT
+${subject}, ${style}, ${lighting}, ${camera}, hyper-detailed 8k resolution, octane render, vivid neon accents, unreal engine 5 style ${arTag} --v 6.0 --style raw
+
+---
+
+### 🤖 DALL-E 3 PROMPT
+A highly detailed, professional ${style} representation of ${subject}. The scene features ${lighting} with ${camera}. Highly intricate details, rich atmosphere, cinematic composition, crisp focus, vibrant colors, clean quality.
+
+---
+
+### 🦁 LEONARDO AI PROMPT
+(Positive Prompt): ${subject}, ${style}, ultra high quality, ${lighting}, ${camera}, photorealistic cinematic lighting, masterwork 8k
+(Negative Prompt): ${negative}`;
+            }
+
+            outputDiv.innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-purple-400"><i class="fa-solid fa-bolt mr-1"></i> Midjourney v6 & Leonardo Prompt</span>
+                            <button onclick="copyText(this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded">Copy</button>
+                        </div>
+                        <p class="text-xs font-mono text-slate-200 select-all">${subject}, ${style}, ${lighting}, ${camera}, hyper-detailed, photorealistic 8k, cinematic depth --ar 16:9 --v 6.0</p>
+                    </div>
+
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-cyan-400"><i class="fa-solid fa-robot mr-1"></i> DALL-E 3 Prompt</span>
+                            <button onclick="copyText(this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded">Copy</button>
+                        </div>
+                        <p class="text-xs font-mono text-slate-200 select-all">A photorealistic, highly detailed image of ${subject}. Created in ${style} style with ${lighting} and captured using ${camera}. Premium visual quality, cinematic colors.</p>
+                    </div>
+
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-rose-400"><i class="fa-solid fa-ban mr-1"></i> Negative Prompt Filter</span>
+                            <button onclick="copyText(this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded">Copy</button>
+                        </div>
+                        <p class="text-xs font-mono text-slate-400 select-all">${negative}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Copy Helper for dynamic cards
+        function copyText(btnElement) {
+            const text = btnElement.parentElement.nextElementSibling.innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showAlert('Prompt copied to clipboard!', 'success');
+        }
+
+        // TOOL 3: AI VOICEOVER & AUDIO SCRIPT STUDIO
+        async function generateVoiceoverScript() {
+            const topic = document.getElementById('voiceTopic').value || 'NextWave AI Creator Studio announcement';
+            const emotion = document.getElementById('voiceEmotion').value;
+            const pace = document.getElementById('voicePace').value;
+            const notes = document.getElementById('voiceNotes').value;
+
+            const scriptContainer = document.getElementById('voiceScriptContainer');
+            scriptContainer.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner fa-spin text-2xl text-pink-400 mb-2"></i><p class="text-xs text-slate-400">Writing Emotional Audio Script...</p></div>`;
+
+            const prompt = `Create a professional Voiceover Audio Script for NextWave Tec based on:
+- Topic: ${topic}
+- Emotional Delivery: ${emotion}
+- Pace: ${pace}
+- Notes: ${notes}
+
+Include emotion tags in brackets like [Excited], [Pause], [Energetic], [Whisper] throughout the script to guide the voice actor or AI voice synthesizer.`;
+
+            let result = await queryGeminiApi(prompt);
+
+            if (!result) {
+                result = `[Energetic] Welcome to the future of digital content creation!
+
+[Pause] If you've been struggling to generate high-converting video scripts, photorealistic image prompts, and professional voiceovers... [Excited] your workflow is about to transform.
+
+[Calm & Direct] NextWave Tec introduces the AI Creator Studio—a unified engine built specifically for modern creators.
+
+[Energetic] Stop switching between five different tools. [Excited] Experience lightning-fast generation and unleash your creativity today! Visit NextWave Tec now.`;
+            }
+
+            scriptContainer.innerHTML = `<p id="voiceScriptText" class="text-xs text-slate-200 font-mono leading-relaxed whitespace-pre-wrap">${result}</p>`;
+            
+            // Estimate duration (avg 130 words per min)
+            const words = result.replace(/\[.*?\]/g, '').split(/\s+/).length;
+            const seconds = Math.round((words / 130) * 60);
+            document.getElementById('voiceDurationEst').innerText = `Est. Duration: ~${seconds}s (${words} words)`;
+        }
+
+        // TTS Web Speech API Logic
+        function initTtsVoices() {
+            const voiceSelect = document.getElementById('ttsVoiceSelect');
+            if (!voiceSelect) return;
+            voiceSelect.innerHTML = '';
+
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.innerText = 'Default System Voice';
+                voiceSelect.appendChild(opt);
+                return;
+            }
+
+            voices.forEach((v, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.innerText = `${v.name} (${v.lang})`;
+                if (v.default) opt.selected = true;
+                voiceSelect.appendChild(opt);
+            });
+        }
+
+        function toggleTtsSpeech() {
+            if (window.speechSynthesis.speaking) {
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                    document.getElementById('playTtsBtn').innerHTML = '<i class="fa-solid fa-pause text-sm"></i>';
+                } else {
+                    window.speechSynthesis.pause();
+                    document.getElementById('playTtsBtn').innerHTML = '<i class="fa-solid fa-play text-sm"></i>';
+                }
+                return;
+            }
+
+            const rawText = document.getElementById('voiceScriptText').innerText;
+            if (!rawText || rawText.includes('Voice script with emotional markers')) {
+                showAlert('Please generate a voiceover script first.', 'warning');
+                return;
+            }
+
+            // Strip stage directions like [Excited] for clean audio reading
+            const cleanText = rawText.replace(/\[.*?\]/g, '');
+
+            ttsUtterance = new SpeechSynthesisUtterance(cleanText);
+            const voiceSelect = document.getElementById('ttsVoiceSelect');
+            const voices = window.speechSynthesis.getVoices();
+
+            if (voices.length > 0 && voiceSelect.value !== '') {
+                ttsUtterance.voice = voices[voiceSelect.value];
+            }
+
+            ttsUtterance.pitch = parseFloat(document.getElementById('ttsPitch').value);
+            
+            ttsUtterance.onend = () => {
+                document.getElementById('playTtsBtn').innerHTML = '<i class="fa-solid fa-play text-sm"></i>';
+            };
+
+            window.speechSynthesis.speak(ttsUtterance);
+            document.getElementById('playTtsBtn').innerHTML = '<i class="fa-solid fa-pause text-sm"></i>';
+        }
+
+        function stopTtsSpeech() {
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+                document.getElementById('playTtsBtn').innerHTML = '<i class="fa-solid fa-play text-sm"></i>';
+            }
+        }
+
+        // TOOL 4: ALL-IN-ONE STUDIO
+        async function generateAllInOne() {
+            const topic = document.getElementById('aioTopic').value || 'NextWave AI Platform Launch';
+            const goal = document.getElementById('aioGoal').value;
+            const format = document.getElementById('aioFormat').value;
+
+            const outputDiv = document.getElementById('aioResult');
+            outputDiv.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner fa-spin text-2xl text-emerald-400 mb-2"></i><p class="text-xs text-slate-400">Generating Complete Content Package (Script + Visuals + Voiceover)...</p></div>`;
+
+            const prompt = `Act as an elite multi-disciplinary AI content agency for NextWave Tec.
+Generate a complete, cohesive campaign package for:
+- Title/Topic: ${topic}
+- Goal: ${goal}
+- Format: ${format}
+
+Output layout required:
+SECTION 1: SHORT VIDEO SCRIPT (Hook, 3 Scenes, CTA)
+SECTION 2: MIDJOURNEY & DALL-E THUMBNAIL PROMPTS (4K Concept)
+SECTION 3: VOICEOVER SCRIPT WITH EMOTIONAL TAGS`;
+
+            let result = await queryGeminiApi(prompt);
+
+            if (!result) {
+                result = `=====================================================
+🚀 SECTION 1: SHORT VIDEO SCRIPT (${format})
+=====================================================
+[HOOK 0-3s]: "This single AI tool completely replaced 4 creator subscriptions..."
+[SCENE 1]: Visual of creator typing topic -> Screen showing full video storyboard & prompts generated instantly.
+[SCENE 2]: "NextWave Tec's new Studio lets you generate viral scripts, 4K image prompts, and audio narrated in seconds."
+[CTA]: "Try NextWave AI Creator Studio free now at nextwavetec.com!"
+
+=====================================================
+🎨 SECTION 2: MIDJOURNEY V6 & DALL-E THUMBNAIL PROMPTS
+=====================================================
+• Midjourney Prompt:
+Futuristic neon digital creator workspace, glowing 3D holographic text "NEXTWAVE AI", cyan and purple lighting, hyper-realistic, 8k resolution, cinematic depth of field --ar 16:9 --v 6.0
+
+• DALL-E 3 Prompt:
+An eye-catching, vibrant YouTube thumbnail showing a futuristic AI workstation with glowing neon cyan interfaces. Bold text reads "AI STUDIO", high contrast, energetic tone.
+
+=====================================================
+🎙️ SECTION 3: VOICEOVER SCRIPT WITH EMOTIONAL TAGS
+=====================================================
+[Energetic] Are you ready to upgrade your content creation workflow? [Pause] NextWave AI Studio combines video scriptwriting, photorealistic image prompt generation, and voiceover scripts into one seamless engine. [Excited] Start creating 10x faster today!`;
+            }
+
+            outputDiv.innerHTML = `<pre class="whitespace-pre-wrap font-mono text-xs text-slate-200 leading-relaxed">${result}</pre>`;
+        }
+    </script>
+</body>
+</html>
